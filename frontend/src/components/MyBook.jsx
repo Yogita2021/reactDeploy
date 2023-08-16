@@ -1,23 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-const MyBook = () => {
-  const [books, setBooks] = useState([]);
-  const fetchbooks = () => {
-    fetch(`https://reactdeploy-429c.onrender.com/book`)
-      .then((response) => response.json())
+const MyBook = ({ data, reload }) => {
+  const handleDeleteBook = (id) => {
+    fetch(`https://reactdeploy-429c.onrender.com/book/${id}`, {
+      method: "DELETE",
+      headers: {
+        "content-type": "application/json",
+      },
+    })
+      .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        setBooks(data.book);
+        reload();
+        alert(data.msg);
       })
-      .catch((err) => {
-        console.log(console.err);
-      });
+      .catch((err) => console.log(err));
   };
-  useEffect(() => {
-    fetchbooks();
-  }, [fetchbooks]);
-  // const renderbook=()=>{
-  //     if(data.length===0)
-  // }
+  return (
+    <div>
+      {data.map((el) => {
+        return (
+          <div key={el._id}>
+            <h1>{el.title}</h1>
+            <p>{el.author}</p>
+            <p>{el.genre}</p>
+            <p>{el.description}</p>
+            <p>{el.price}</p>
+            <button onClick={() => handleDeleteBook(el._id)}>Delete</button>
+          </div>
+        );
+      })}
+    </div>
+  );
 };
-export default MyBook;
+
+export { MyBook };

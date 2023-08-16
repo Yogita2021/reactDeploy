@@ -1,64 +1,76 @@
 import React, { useState, useEffect } from "react";
+import { MyBook } from "./MyBook";
 
 const AddBook = () => {
-  const [formData, setFormData] = useState({
-    title: "",
-    author: "",
-    genre: "",
-    description: "",
-    price: "",
-  });
+  const [data, setdata] = useState([]);
+
+  const [title, settitle] = useState("");
+  const [author, setauthor] = useState("");
+  const [description, setdescription] = useState("");
+  const [genre, setgenre] = useState("");
+  const [price, setprice] = useState("");
 
   const handlesubmit = (e) => {
     e.preventDefault();
+    let obj = {
+      title: title,
+      author: author,
+      description: description,
+      genre: genre,
+      price: price,
+    };
+    console.log(obj);
 
     fetch(`https://reactdeploy-429c.onrender.com/book/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(obj),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        alert("booked added");
-        if (data.msg === "book added!") {
-          setFormData({
-            title: "",
-            author: "",
-            genre: "",
-            description: "",
-            price: "",
-          });
-        }
+        alert(data.msg);
+        fetchbooks();
       });
   };
+
+  const fetchbooks = () => {
+    fetch(`https://reactdeploy-429c.onrender.com/book`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setdata(data.book);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  useEffect(() => {
+    fetchbooks();
+  }, []);
 
   return (
     <div>
       <h2>Add book</h2>
 
-      <form onSubmit={handlesubmit}>
+      <form>
         <label htmlFor="title">title</label>
         <input
           type="text"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        />{" "}
+          value={title}
+          onChange={(e) => settitle(e.target.value)}
+        />
         <br />
         <label htmlFor="Author">Author</label>
         <input
           type="text"
-          value={formData.author}
-          onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-        />{" "}
+          value={author}
+          onChange={(e) => setauthor(e.target.value)}
+        />
         <br />
         <label htmlFor="genre">Genre</label>
-        <select
-          value={formData.genre}
-          onChange={(e) => setFormData({ ...formData, genre: e.target.genre })}
-        >
+        <select value={genre} onChange={(e) => setgenre(e.target.genre)}>
           <option value="Fiction">Fiction</option>
           <option value="Science">Science</option>
           <option value="Comic">Comic</option>
@@ -66,21 +78,24 @@ const AddBook = () => {
         <br />
         <label htmlFor="description">Description</label>
         <textarea
-          value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
+          value={description}
+          onChange={(e) => setdescription(e.target.value)}
         ></textarea>
         <br />
         <label htmlFor="price">Price</label>
         <input
           type="number"
-          value={formData.value}
-          onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-        />{" "}
+          value={price}
+          onChange={(e) => setprice(e.target.value)}
+        />
         <br />
-        <button type="submit">Add Book</button>
+        <input type="submit" onClick={handlesubmit} />
       </form>
+
+      <div>
+        <h1>hello</h1>
+        <MyBook data={data} />
+      </div>
     </div>
   );
 };
