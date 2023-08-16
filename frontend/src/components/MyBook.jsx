@@ -1,6 +1,6 @@
 import React from "react";
 
-const MyBook = ({ data, reload }) => {
+const MyBook = ({ data }) => {
   const handleDeleteBook = (id) => {
     fetch(`https://reactdeploy-429c.onrender.com/book/${id}`, {
       method: "DELETE",
@@ -10,7 +10,6 @@ const MyBook = ({ data, reload }) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        reload();
         alert(data.msg);
       })
       .catch((err) => console.log(err));
